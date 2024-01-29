@@ -1,6 +1,6 @@
 {
   "name": "semantic-release-git-publish",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A semantic-release plugin that publishes by pushing the contents of this Git repository to another Git repository",
   "keywords": [
     "semantic-release",
