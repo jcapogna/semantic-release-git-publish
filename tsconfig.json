@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "module": "es2022",
+    "target": "es2022",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "declaration": true,
+    "strict": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "types": [
+      "node"
+    ],
+    "allowJs": true,
+    "removeComments": true,
+    "noLib": false,
+    "skipLibCheck": true,
+    "exactOptionalPropertyTypes": false,
+    "noImplicitReturns": true,
+    "alwaysStrict": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": false,
+    "strictNullChecks": false,
+    "sourceMap": true,
+    "outDir": "lib",
+  },
+  "include": [
+    "src/**/*"
+  ],
+}
