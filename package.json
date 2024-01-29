@@ -26,6 +26,8 @@
     "tmp-promise": "^3.0.3"
   },
   "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
     "@types/semantic-release__error": "^3.0.0",
     "@types/signale": "^1.2.1",
     "typescript": "^5.3.3",
