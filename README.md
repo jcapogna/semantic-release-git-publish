@@ -1,6 +1,9 @@
 # semantic-release-git-publish
 
-A [**semantic-release**](https://github.com/semantic-release/semantic-release) plugin that publishes by syncing the contents of this repo to another another Git repository and tagging that repository with the release version.
+[![NPM Version](https://img.shields.io/npm/v/semantic-release-git-publish)](https://www.npmjs.com/package/semantic-release-git-publish) [![Run tests](https://github.com/jcapogna/semantic-release-git-publish/actions/workflows/test.yml/badge.svg?branch=master&event=push)](https://github.com/jcapogna/semantic-release-git-publish/actions/workflows/test.yml)
+
+
+A [**semantic-release**](https://github.com/semantic-release/semantic-release) plugin that publishes by syncing the contents of the working directory to another Git repository and tagging that repository with the release version.
 
 ## Use cases
 
