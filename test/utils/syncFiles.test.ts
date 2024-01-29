@@ -35,6 +35,10 @@ async function setupTestGitDirectory(sourceDir: string|null, options?: {
     const git = simpleGit({baseDir: tmpDir.path});
     await git.init()
 
+    // set an author for the repo
+    await git.addConfig('user.name', 'Unit Tester', false, "local")
+    await git.addConfig('user.email', 'test@test.com')
+
     // populate with initial files if source directory provided
     if (sourceDir) {
         await fs.cp(sourceDir, tmpDir.path, {recursive: true})

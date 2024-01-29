@@ -5,6 +5,7 @@ import {Context, PluginContext} from "../src/types/semantic-release.js";
 import {createMockContext, mockCwd} from "./helpers/mockContext.js";
 import {syncFiles} from "../src/utils/syncFiles.js";
 import {Signale} from "signale";
+import {simpleGit} from "simple-git";
 
 const THIS_REPO_URL = "git@fakegit.com:thisrepo.git"
 const DEST_REPO_URL = "git@fakegit.com:destination.git"
@@ -81,12 +82,11 @@ describe("publish", () => {
             publish(pluginContext, context)
         ).resolves.not.toThrowError()
 
+        expect(simpleGit).toHaveBeenCalledWith({ baseDir: "/tmp/fake-for-testing" })
+
         // clone called with right destination repo
         expect(mockSimpleGit.clone.mock.calls[0][0]).toEqual(DEST_REPO_URL);
         expect(mockLogger.info).toHaveBeenCalledWith("Cloned destination repo git@fakegit.com:destination.git to /tmp/fake-for-testing")
-
-        // cwd called with same directory as clone command
-        expect(mockSimpleGit.cwd).toHaveBeenCalledWith({path: "/tmp/fake-for-testing"})
 
         // sync called on correct directories
         expect(syncFiles).toHaveBeenCalledWith(mockCwd, "/tmp/fake-for-testing")
