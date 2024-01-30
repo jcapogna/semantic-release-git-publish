@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/jcapogna/semantic-release-git-publish/compare/v1.0.1...v1.1.0) (2024-01-30)
+
+
+### Features
+
+* add 'ignorePaths' option to ignore paths when syncing working directory to destination repository ([206264e](https://github.com/jcapogna/semantic-release-git-publish/commit/206264e4f012d2928189559ef35879c27d1756e0))
+
 ## [1.0.1](https://github.com/jcapogna/semantic-release-git-publish/compare/v1.0.0...v1.0.1) (2024-01-29)
 
 
