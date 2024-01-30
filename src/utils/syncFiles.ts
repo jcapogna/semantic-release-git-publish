@@ -8,12 +8,19 @@ import {getGitignoreFilter} from "./gitIgnoreFilter.js";
  *
  * @param sourceDir source directory of files
  * @param destDir destination directory (must be a Git repo)
+ * @param excludeFilters glob filters of files to not sync
  */
-export async function syncFiles(sourceDir: string, destDir: string) {
+export async function syncFiles(sourceDir: string, destDir: string, excludeFilters?: string[]) {
     const git = simpleGit({baseDir: destDir});
+
+    let excludeFilter: string|undefined = undefined;
+    if (excludeFilters) {
+        excludeFilter = excludeFilters.join(",")
+    }
 
     const difference = compareSync(sourceDir, destDir, {
         filterHandler: getGitignoreFilter(sourceDir, destDir),
+        excludeFilter: excludeFilter,
         includeFilter: "*",
         compareContent: true,
     });

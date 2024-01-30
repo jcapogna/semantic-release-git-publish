@@ -34,6 +34,8 @@ export interface PluginContext {
     repositoryUrl: string,
 
     // option: the destination repository url
-    destinationRepositoryUrl: string
+    destinationRepositoryUrl: string,
+    // option: glob patterns to not sync
+    ignorePaths?: string[]
 }
 

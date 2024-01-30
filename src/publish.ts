@@ -25,7 +25,7 @@ async function publish(
         logger.info(`Cloned destination repo ${pluginContext.destinationRepositoryUrl} to ${tmpDir.path}`)
 
         // Sync this project to it
-        await syncFiles(cwd, tmpDir.path)
+        await syncFiles(cwd, tmpDir.path, pluginContext.ignorePaths)
         logger.debug(`Synced files to cloned repository`)
 
         // Check if there are changes to commit

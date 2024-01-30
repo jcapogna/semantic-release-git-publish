@@ -89,7 +89,7 @@ describe("publish", () => {
         expect(mockLogger.info).toHaveBeenCalledWith("Cloned destination repo git@fakegit.com:destination.git to /tmp/fake-for-testing")
 
         // sync called on correct directories
-        expect(syncFiles).toHaveBeenCalledWith(mockCwd, "/tmp/fake-for-testing")
+        expect(syncFiles).toHaveBeenCalledWith(mockCwd, "/tmp/fake-for-testing", undefined)
         expect(mockLogger.debug).toHaveBeenCalledWith("Synced files to cloned repository")
 
         expect(mockSimpleGit.status).toHaveBeenCalledTimes(1)
@@ -145,6 +145,25 @@ describe("publish", () => {
         ).resolves.not.toThrowError()
 
         expect(mockLogger.warn).toHaveBeenCalledWith("There are no changes to publish. Will publish an empty commit anyway.")
+
+        expect(mockSimpleGit.commit).toHaveBeenCalledWith('Publishing version 1.0.0', {
+            "--allow-empty": null
+        });
+    })
+
+    test("syncFiles receives excludeFilters when ignorePaths option is provided", async () => {
+        const context: Context = createMockContext(mockLogger)
+        const pluginContext: PluginContext = {
+            repositoryUrl: THIS_REPO_URL,
+            destinationRepositoryUrl: DEST_REPO_URL,
+            ignorePaths: ["this", "that"]
+        }
+
+        await expect(
+            publish(pluginContext, context)
+        ).resolves.not.toThrowError()
+
+        expect(syncFiles).toHaveBeenCalledWith(mockCwd, "/tmp/fake-for-testing", ["this", "that"])
 
         expect(mockSimpleGit.commit).toHaveBeenCalledWith('Publishing version 1.0.0', {
             "--allow-empty": null

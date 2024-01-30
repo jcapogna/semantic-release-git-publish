@@ -40,13 +40,16 @@ async function setupTestGitDirectory(sourceDir: string|null, options?: {
     await git.addConfig('user.email', 'test@test.com')
 
     // populate with initial files if source directory provided
+    let shouldCommit = false
+    if (options?.gitIgnoreContents) {
+        await fs.writeFile(tmpDir.path + "/.gitignore", options.gitIgnoreContents)
+        shouldCommit = true
+    }
     if (sourceDir) {
         await fs.cp(sourceDir, tmpDir.path, {recursive: true})
-
-        if (options?.gitIgnoreContents) {
-            await fs.writeFile(tmpDir.path + "/.gitignore", options.gitIgnoreContents)
-        }
-
+        shouldCommit = true
+    }
+    if (shouldCommit) {
         await git.add("--all")
         await git.commit("add all test files")
     }
@@ -303,6 +306,168 @@ describe("syncFiles", () => {
         expect(gitStatus.isClean()).toBe(true)
 
         expectGitStatus(gitStatus, {
+        })
+    })
+
+    test("one excludeFilter ignores one file in root", async() => {
+        const sourceDir = getFullSourcePath("exclude-filter-source")
+        const tmpDestDir = await setupTestGitDirectory(null);
+
+        const excludeFilters = ["a.txt"]
+
+        await syncFiles(sourceDir, tmpDestDir, excludeFilters)
+
+        const difference = await compareDirs(sourceDir, tmpDestDir)
+        expect(difference.same).toBe(false) // not the same
+
+        const gitStatus = await getGitStatus(tmpDestDir)
+        expect(gitStatus.isClean()).toBe(false)
+
+        expectGitStatus(gitStatus, {
+            created: [
+                "subdirectory/sub1.txt",
+                "subdirectory/sub2.txt"
+            ],
+            staged: [
+                "subdirectory/sub1.txt",
+                "subdirectory/sub2.txt"
+            ]
+        })
+    })
+
+    test("one excludeFilter ignores subdirectory", async() => {
+        const sourceDir = getFullSourcePath("exclude-filter-source")
+        const tmpDestDir = await setupTestGitDirectory(null);
+
+        const excludeFilters = ["subdirectory"]
+
+        await syncFiles(sourceDir, tmpDestDir, excludeFilters)
+
+        const difference = await compareDirs(sourceDir, tmpDestDir)
+        expect(difference.same).toBe(false) // not the same
+
+        const gitStatus = await getGitStatus(tmpDestDir)
+        expect(gitStatus.isClean()).toBe(false)
+
+        expectGitStatus(gitStatus, {
+            created: [
+                "a.txt",
+            ],
+            staged: [
+                "a.txt"
+            ]
+        })
+    })
+
+    test("one excludeFilter ignores one file in subdirectory", async() => {
+        const sourceDir = getFullSourcePath("exclude-filter-source")
+        const tmpDestDir = await setupTestGitDirectory(null);
+
+        const excludeFilters = ["/subdirectory/sub1.txt"]
+
+        await syncFiles(sourceDir, tmpDestDir, excludeFilters)
+
+        const difference = await compareDirs(sourceDir, tmpDestDir)
+        expect(difference.same).toBe(false) // not the same
+
+        const gitStatus = await getGitStatus(tmpDestDir)
+        expect(gitStatus.isClean()).toBe(false)
+
+        expectGitStatus(gitStatus, {
+            created: [
+                "a.txt",
+                "subdirectory/sub2.txt"
+            ],
+            staged: [
+                "a.txt",
+                "subdirectory/sub2.txt"
+            ]
+        })
+    })
+
+    test("one excludeFilter ignores one file with glob match", async() => {
+        const sourceDir = getFullSourcePath("exclude-filter-source")
+        const tmpDestDir = await setupTestGitDirectory(null);
+
+        const excludeFilters = ["/**/*2.txt"]
+
+        await syncFiles(sourceDir, tmpDestDir, excludeFilters)
+
+        const difference = await compareDirs(sourceDir, tmpDestDir)
+        expect(difference.same).toBe(false) // not the same
+
+        const gitStatus = await getGitStatus(tmpDestDir)
+        expect(gitStatus.isClean()).toBe(false)
+
+        expectGitStatus(gitStatus, {
+            created: [
+                "a.txt",
+                "subdirectory/sub1.txt"
+            ],
+            staged: [
+                "a.txt",
+                "subdirectory/sub1.txt"
+            ]
+        })
+    })
+
+    test("one excludeFilter ignores json and js filetypes with two glob matches", async() => {
+        const sourceDir = getFullSourcePath("exclude-filter-extensions-source")
+        const tmpDestDir = await setupTestGitDirectory(null);
+
+        const excludeFilters = ["**/*.json", "**/*.js"]
+
+        await syncFiles(sourceDir, tmpDestDir, excludeFilters)
+
+        const difference = await compareDirs(sourceDir, tmpDestDir)
+        expect(difference.same).toBe(false) // not the same
+
+        const gitStatus = await getGitStatus(tmpDestDir)
+        expect(gitStatus.isClean()).toBe(false)
+
+        expectGitStatus(gitStatus, {
+            created: [
+                "a.txt",
+                "b.java",
+                "subdirectory/1.txt",
+                "subdirectory/2.java"
+            ],
+            staged: [
+                "a.txt",
+                "b.java",
+                "subdirectory/1.txt",
+                "subdirectory/2.java"
+            ]
+        })
+    })
+
+    // same as above test, but gitignore also excludes java files
+    test("exclude filter and gitignore work together", async() => {
+        const sourceDir = getFullSourcePath("exclude-filter-extensions-source")
+        const tmpSourceDir = await setupTestGitDirectory(sourceDir, {
+            gitIgnoreContents: "**/*.java"
+        })
+        const tmpDestDir = await setupTestGitDirectory(null, {
+            gitIgnoreContents: "**/*.java"
+        });
+
+        const excludeFilters = ["**/*.json", "**/*.js"]
+
+        await syncFiles(tmpSourceDir, tmpDestDir, excludeFilters)
+
+
+        const gitStatus = await getGitStatus(tmpDestDir)
+        expect(gitStatus.isClean()).toBe(false)
+
+        expectGitStatus(gitStatus, {
+            created: [
+                "a.txt",
+                "subdirectory/1.txt"
+            ],
+            staged: [
+                "a.txt",
+                "subdirectory/1.txt"
+            ]
         })
     })
 

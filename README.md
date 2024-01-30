@@ -37,7 +37,11 @@ The plugin can be configured in the [**semantic-release** configuration file](ht
     [
       "semantic-release-git-publish",
       {
-        "destinationRepositoryUrl": "git@gitlab.com:destination-repository.git"
+        "destinationRepositoryUrl": "git@gitlab.com:destination-repository.git",
+        "ignorePaths": [
+          "secret.txt",
+          "**/*.secret"
+        ]
       }
     ]
   ]
@@ -48,9 +52,10 @@ The plugin can be configured in the [**semantic-release** configuration file](ht
 
 ### Options
 
-| Options                    | Description                            | Default |
-|----------------------------|----------------------------------------|---------|
-| `destinationRepositoryUrl` | The path to the destination repository |         |
+| Options                    | Description                                                                                                                                                                                                                                                                                             | Default |
+|----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| `destinationRepositoryUrl` | The path to the destination repository                                                                                                                                                                                                                                                                  |         |
+| `ignorePaths`              | (Optional) An array of glob patterns to exclude from file syncing. <br/><br/>Matching files in the working directory will not get synced to the destination repo or be modified in the destination repo if they already exist. Globs are [minimatch](https://www.npmjs.com/package/minimatch) patterns. | [ ]     |
 
 ## Known limitations
 
